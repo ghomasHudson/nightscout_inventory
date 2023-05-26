@@ -19,7 +19,7 @@ GLUCOSE_METER_DEVICE = config('GLUCOSE_METER_DEVICE')
 
 if not os.path.exists("db.json"):
     db = TinyDB('db.json')
-    timestamp_of_last_check = int((datetime.now() - timedelta(hours=10)).timestamp() * 1000)
+    timestamp_of_last_check = int((datetime.now()).timestamp() * 1000)
     db.insert({
         "timestamp": timestamp_of_last_check,
         "inventory": {
@@ -33,11 +33,6 @@ else:
     db = TinyDB('db.json')
 
 
-# Auth
-access_token = 'token=' + ACCESS_TOKEN
-response = requests.get(f'{BASE_URL}/api/v2/authorization/request/{access_token}')
-jwt = response.json()['token']
-headers = {'Authorization': f'Bearer {jwt}'}
 
 #timestamp_of_last_check = int(time.time() * 1000) # current timestamp in ms
 
@@ -52,6 +47,13 @@ def check_inventory():
     timestamp_of_last_check = doc["timestamp"]
     inventory = doc["inventory"]
     new_timestamp = int(time.time() * 1000)
+
+
+    # Auth
+    access_token = 'token=' + ACCESS_TOKEN
+    response = requests.get(f'{BASE_URL}/api/v2/authorization/request/{access_token}')
+    jwt = response.json()['token']
+    headers = {'Authorization': f'Bearer {jwt}'}
 
     # treatments
     r = requests.get(f'{BASE_URL}/api/v3/treatments/history/{timestamp_of_last_check}', headers=headers)
@@ -79,7 +81,8 @@ def check_inventory():
     }, doc_id=new_timestamp))
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=check_inventory, trigger="interval", seconds=20)
+scheduler.add_job(func=check_inventory, trigger="interval", hours=1)
+check_inventory()
 scheduler.start()
 
 @app.route('/', methods=['GET'])
