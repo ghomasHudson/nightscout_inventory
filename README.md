@@ -9,9 +9,10 @@ A basic tool to track diabetes consumables from nightscout logs. Currently this 
 - Each fingerprick test uses 1 test strip and 1 lancet.
 - Each Bolus uses 1 needle.
 
-If you wanted to you it, you'd have to modify all this to suit your needs.
+If you wanted to use it, you'd have to modify all this to suit your needs. If there's demand, I'll make it more configurable.
 
 ## Config
+
 The following env variables are required:
 - `NIGHTSCOUT_URL` - the `https://www.nightscout.mydomain.com` address to your nightscout server
 - `ACCESS_TOKEN` - A nightscout access token so you can authenticate. Make a new subject in the "Admin Tools" section with read access for this to work.
