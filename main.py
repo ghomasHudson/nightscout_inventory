@@ -36,6 +36,8 @@ else:
 def check_inventory():
     print("Check nightscout")
 
+    has_changed = False
+
     el = db.all()[-1]
     doc = db.get(doc_id=el.doc_id)
 
@@ -56,6 +58,7 @@ def check_inventory():
     for treatment in data['result']:
         treatment["insulinInjections"] = json.loads(treatment["insulinInjections"])
         for injection in treatment['insulinInjections']:
+            has_changed = True
             inventory['needles'] -= 1
             insulin_name = injection['insulin']
             if insulin_name in inventory['insulin_pens']:
@@ -66,14 +69,16 @@ def check_inventory():
     data = r.json()
     for entry in data["result"]:
         if GLUCOSE_METER_DEVICE in entry["device"]:
+            has_changed = True
             inventory['lancets'] -= 1
             inventory['test_strips'] -= 1
 
     # Update database
-    db.insert(Document({
-        "timestamp": new_timestamp,
-        "inventory": inventory
-    }, doc_id=new_timestamp))
+    if has_changed:
+        db.insert(Document({
+            "timestamp": new_timestamp,
+            "inventory": inventory
+        }, doc_id=new_timestamp))
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=check_inventory, trigger="interval", hours=1)

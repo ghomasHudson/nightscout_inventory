@@ -101,20 +101,29 @@
 <!-- ... other code ... -->
 <script>
 
-    var timeFormat = 'MM/DD/YYYY HH:mm';
     var options = {
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        tooltipFormat: 'll HH:mm'
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date'
-                    }
-                },
+        scales: {
+            y: {
+                beginAtZero: true,
             },
+            x: {
+                type: 'time',
+                ticks:{
+                    major: {enabled: true},
+                    minor: {enabled: false},
+                },
+                time: {
+                    type: 'linear',
+                    displayFormats: {
+                       'day': 'MMM DD',
+                       'week': 'MMM DD',
+                       'month': 'MMM DD',
+                       'quarter': 'MMM DD',
+                       'year': 'MMM DD',
+                    }
+                }
+            }
+        }
     }
 
 
