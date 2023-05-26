@@ -45,6 +45,10 @@ def check_inventory():
     inventory = doc["inventory"]
     new_timestamp = int(time.time() * 1000)
 
+    if datetime.fromtimestamp(new_timestamp/1000).hour == 10:
+        # Assume bolus taken once a day before 10am
+        has_changed = True
+        inventory['needles'] -= 1
 
     # Auth
     access_token = 'token=' + ACCESS_TOKEN
