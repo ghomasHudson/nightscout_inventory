@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diabetes Consumables Inventory</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="text-center">Inventory Levels</h1>
+                <table class="table mt-4">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Item</th>
+                            <th scope="col">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Needles</td>
+                            <td>{{ inventory['needles'] }}</td>
+                        </tr>
+                        {% for insulin_name, amount in inventory['insulin_pens'].items() %}
+                        <tr>
+                            <td>{{ insulin_name }} Pens</td>
+                            <td>{{ amount }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>Lancets</td>
+                            <td>{{ inventory['lancets'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Test Strips</td>
+                            <td>{{ inventory['test_strips'] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center mt-5">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStockModal">
+                        Add Stock
+                    </button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="addStockModal" tabindex="-1" role="dialog" aria-labelledby="addStockModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addStockModalLabel">Add Stock</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" action="/add_stock" class="mt-4">
+                                    <div class="form-group">
+                                        <label for="item">Item</label>
+                                        <select id="item" name="item" class="form-control">
+                                            <option value="needles">Needles</option>
+                                            <option value="insulin_pens">Insulin Pens</option>
+                                            <option value="lancets">Lancets</option>
+                                            <option value="test_strips">Test Strips</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="insulin_name">Insulin Name (only for pens)</label>
+                                        <input type="text" id="insulin_name" name="insulin_name" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="amount">Amount</label>
+                                        <input type="number" id="amount" name="amount" min="1" class="form-control" required/>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
