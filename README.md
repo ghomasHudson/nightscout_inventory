@@ -1,5 +1,5 @@
 # Nightscout Inventory
-> Super basic Inventory / Stock monitoring for diabetes consumables needles, lancets, test strips using Nightscout
+> Super basic Inventory / Stock monitoring for diabetes consumables (needles, lancets, test strips, etc) using Nightscout
 
 ![pic-selected-230526-1020-03](https://github.com/ghomasHudson/nightscout_inventory/assets/13795113/5219f1f2-f24b-44f5-8efe-c7b488ae6a94)
 
