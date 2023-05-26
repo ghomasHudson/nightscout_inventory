@@ -5,6 +5,9 @@
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@0.1.1"></script>
 
 </head>
 <body>
@@ -40,11 +43,22 @@
                         </tr>
                     </tbody>
                 </table>
+
+
+            <div>
+                <canvas id="needlesChart"></canvas>
+                <canvas id="lancetsChart"></canvas>
+                <canvas id="testStripsChart"></canvas>
+                {% for insulin_name, history in inventory_history['insulin_pens'].items() %}
+                    <canvas id="{{ insulin_name }}Chart"></canvas>
+                {% endfor %}
+            </div>
                 <div class="text-center mt-5">
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStockModal">
                         Add Stock
                     </button>
                 </div>
+
 
                 <!-- Modal -->
                 <div class="modal fade" id="addStockModal" tabindex="-1" role="dialog" aria-labelledby="addStockModalLabel" aria-hidden="true">
@@ -84,6 +98,85 @@
             </div>
         </div>
     </div>
+<!-- ... other code ... -->
+<script>
+
+    var timeFormat = 'MM/DD/YYYY HH:mm';
+    var options = {
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'll HH:mm'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                },
+            },
+    }
+
+
+    var ctx = document.getElementById('needlesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [
+            {
+                label: 'Needles',
+                data: {{ inventory_history['needles']|tojson }},
+                borderColor: 'rgb(255, 0, 0)',
+                backgroundColor: 'rgba(255, 0, 0, 0.5)'
+            },
+            {
+                label: 'Lancets',
+                data: {{ inventory_history['lancets']|tojson }},
+                borderColor: 'rgb(0, 128, 0)',
+                backgroundColor: 'rgba(0, 128, 0, 0.5)'
+            },
+            {
+                label: 'Test Strips',
+                data: {{ inventory_history['test_strips']|tojson }},
+                borderColor: 'rgb(0, 0, 255)',
+                backgroundColor: 'rgba(0, 0, 255, 0.5)'
+            },
+            {% for insulin_name, history in inventory_history['insulin_pens'].items() %}
+            {
+                label: '{{ insulin_name }} Pens',
+                data: {{ history|tojson }},
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.5)'
+            }
+            {% endfor %}
+            ]
+        },
+        options: options
+    });
+
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Disable the insulin_name field by default
+        $('#insulin_name').prop('disabled', true);
+
+        // Attach a change event handler to the item dropdown
+        $('#item').change(function() {
+            if ($(this).val() == 'insulin_pens') {
+                // If Insulin Pens is selected, enable the insulin_name field
+                $('#insulin_name').prop('disabled', false);
+            } else {
+                // If any other item is selected, disable the insulin_name field
+                $('#insulin_name').prop('disabled', true);
+                $('#insulin_name').val('');  // clear the input field
+            }
+        });
+    });
+</script>
+
+
+
 </body>
 </html>
 

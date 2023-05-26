@@ -33,11 +33,6 @@ else:
     db = TinyDB('db.json')
 
 
-
-#timestamp_of_last_check = int(time.time() * 1000) # current timestamp in ms
-
-# FOR TESTING
-
 def check_inventory():
     print("Check nightscout")
 
@@ -85,11 +80,29 @@ scheduler.add_job(func=check_inventory, trigger="interval", hours=1)
 check_inventory()
 scheduler.start()
 
+
 @app.route('/', methods=['GET'])
 def index():
-    el = db.all()[-1]
-    doc = db.get(doc_id=el.doc_id)
-    return render_template('index.html', inventory=doc["inventory"])
+    all_inventory_history = db.all()
+    inventory_history = { "needles": [], "insulin_pens": {}, "lancets": [], "test_strips": [] }
+
+    for inventory_entry in all_inventory_history:
+        timestamp = datetime.fromtimestamp(inventory_entry["timestamp"] / 1000)
+        inventory = inventory_entry["inventory"].copy()
+
+        inventory_history["needles"].append({"x": timestamp, "y": inventory['needles']})
+        inventory_history["lancets"].append({"x": timestamp, "y": inventory['lancets']})
+        inventory_history["test_strips"].append({"x": timestamp, "y": inventory['test_strips']})
+
+        for insulin_name, amount in inventory['insulin_pens'].items():
+            if insulin_name not in inventory_history["insulin_pens"]:
+                inventory_history["insulin_pens"][insulin_name] = []
+            inventory_history["insulin_pens"][insulin_name].append({"x": timestamp, "y": amount})
+
+    return render_template('index.html', inventory=inventory_entry["inventory"], inventory_history=inventory_history)
+
+
+
 
 @app.route('/add_stock', methods=['POST'])
 def add_stock():
